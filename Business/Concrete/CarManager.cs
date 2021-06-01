@@ -1,4 +1,6 @@
 ﻿using Business.Abstract;
+using Business.Constants;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
@@ -18,38 +20,45 @@ namespace Business.Concrete
         }
 
 
-        public List<Car> GetAll()
+        public IDataResult<List<Car>> GetAll()
         {
-            return _carDAL.GetAll();
+            return new SuccessDataResult<List<Car>>(_carDAL.GetAll());
         }
 
-        public Car GetById(int id)
+        public IDataResult<Car> GetById(int id)
         {
-            return _carDAL.Get(c => c.CarID == id);
+            return new SuccessDataResult<Car>(_carDAL.Get(c => c.CarID == id));
         }
 
-        public List<Car> GetCarsByBrandId(int brandId)
+        public IDataResult<List<Car>> GetCarsByBrandId(int brandId)
         {
-            return _carDAL.GetAll(c => c.BrandID == brandId);
+            return new SuccessDataResult<List<Car>>(_carDAL.GetAll(c => c.BrandID == brandId));
         }
-        public List<CarDetailDTO> GetCarDetails()
+        public IDataResult<List<CarDetailDTO>> GetCarDetails()
         {
-            return _carDAL.GetCarDetails();
+            if (DateTime.Now.Hour == 17)
+            {
+                return new ErrorDataResult<List<CarDetailDTO>>(Messages.DetailErrorMsg);
+            }
+            return new SuccessDataResult<List<CarDetailDTO>>(_carDAL.GetCarDetails(),Messages.DetailMessage);
         }
 
-        public void Add(Car car)
+        public IResult Add(Car car)
         {
             _carDAL.Add(car);
+            return new SuccessResult();
         }
 
-        public void Update(Car car)
+        public IResult Update(Car car)
         {
             _carDAL.Update(car);
+            return new SuccessResult();
         }
 
-        public void Delete(Car car)
+        public IResult Delete(Car car)
         {
             _carDAL.Delete(car);
+            return new SuccessResult();
         }
     }
 }
